@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="uoQ-pc-6RY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.17" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="uoQ-pc-6RY">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="PingFang.ttc">
+            <string>PingFangSC-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--InputViewController-->
         <scene sceneID="h5A-fk-jYa">
@@ -22,22 +26,37 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter your GitHub username" textAlignment="center" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="MHS-R2-Kl9">
-                                <rect key="frame" x="70" y="70" width="274" height="45"/>
+                                <rect key="frame" x="50" y="89" width="314" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="agq-aQ-4Gc"/>
                                 </constraints>
                                 <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lop-lT-ac4">
-                                <rect key="frame" x="177" y="165" width="60" height="60"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Put the view automatically when a plane is found" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cLG-pM-0kn">
+                                <rect key="frame" x="50" y="159" width="200" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="oSd-SU-Ciw"/>
+                                    <constraint firstAttribute="width" constant="200" id="BAx-Ta-rr6"/>
+                                    <constraint firstAttribute="height" constant="50" id="FeI-Bp-NHq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R27-00-qfx">
+                                <rect key="frame" x="315" y="168" width="51" height="31"/>
+                            </switch>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lop-lT-ac4">
+                                <rect key="frame" x="177" y="234" width="60" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="oSd-SU-Ciw"/>
                                     <constraint firstAttribute="width" constant="60" id="y1I-nZ-EDk"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="GO"/>
+                                <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="15"/>
+                                <state key="normal" title="Go">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
                                     <action selector="gotoARAction" destination="oYO-3Y-PV3" eventType="touchUpInside" id="6De-7S-9Qa"/>
                                 </connections>
@@ -45,16 +64,21 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="lop-lT-ac4" firstAttribute="top" secondItem="MHS-R2-Kl9" secondAttribute="bottom" constant="50" id="A86-Xq-fJW"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="MHS-R2-Kl9" secondAttribute="trailing" constant="50" id="IVg-bE-0Wy"/>
+                            <constraint firstItem="cLG-pM-0kn" firstAttribute="top" secondItem="MHS-R2-Kl9" secondAttribute="bottom" constant="25" id="6gj-Sm-q2h"/>
+                            <constraint firstItem="R27-00-qfx" firstAttribute="trailing" secondItem="MHS-R2-Kl9" secondAttribute="trailing" id="Dam-ro-tPC"/>
+                            <constraint firstItem="R27-00-qfx" firstAttribute="centerY" secondItem="cLG-pM-0kn" secondAttribute="centerY" id="H7N-8r-2Dg"/>
+                            <constraint firstAttribute="trailing" secondItem="MHS-R2-Kl9" secondAttribute="trailing" constant="50" id="IVg-bE-0Wy"/>
                             <constraint firstItem="MHS-R2-Kl9" firstAttribute="centerX" secondItem="tV0-dr-SRC" secondAttribute="centerX" id="KqW-jg-Ycf"/>
-                            <constraint firstItem="MHS-R2-Kl9" firstAttribute="leading" secondItem="tV0-dr-SRC" secondAttribute="leadingMargin" constant="50" id="Snr-j3-3ux"/>
+                            <constraint firstItem="MHS-R2-Kl9" firstAttribute="leading" secondItem="tV0-dr-SRC" secondAttribute="leading" constant="50" id="Snr-j3-3ux"/>
+                            <constraint firstItem="cLG-pM-0kn" firstAttribute="leading" secondItem="tV0-dr-SRC" secondAttribute="leading" constant="50" id="Szo-GR-Obn"/>
                             <constraint firstItem="lop-lT-ac4" firstAttribute="centerX" secondItem="tV0-dr-SRC" secondAttribute="centerX" id="Vzd-aI-1DZ"/>
-                            <constraint firstItem="MHS-R2-Kl9" firstAttribute="top" secondItem="tV0-dr-SRC" secondAttribute="top" constant="70" id="tul-do-9OY"/>
+                            <constraint firstItem="lop-lT-ac4" firstAttribute="top" secondItem="cLG-pM-0kn" secondAttribute="bottom" constant="25" id="Xsp-cf-XeF"/>
+                            <constraint firstItem="MHS-R2-Kl9" firstAttribute="top" secondItem="Btv-xy-YW5" secondAttribute="bottom" constant="25" id="d4f-Pj-UBF"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="ARGitHubCommits" id="QSV-OB-u9T"/>
                     <connections>
+                        <outlet property="automaticSwitch" destination="R27-00-qfx" id="gpl-6w-sHA"/>
                         <outlet property="goButton" destination="lop-lT-ac4" id="Tcr-aX-hX2"/>
                         <outlet property="usernameTextField" destination="MHS-R2-Kl9" id="04m-iY-370"/>
                         <segue destination="BV1-FR-VrT" kind="show" identifier="arSegue" id="SUD-qF-T5X"/>
@@ -85,7 +109,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="uoQ-pc-6RY" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5AT-RE-kcI">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="5AT-RE-kcI">
                         <rect key="frame" x="0.0" y="20" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

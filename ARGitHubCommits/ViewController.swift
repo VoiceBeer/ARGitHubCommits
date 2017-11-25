@@ -15,15 +15,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     var floorNode: SCNNode!
     var currentPlane: SCNNode?
-    var planeCount = 0 {
-        didSet {
-            if planeCount > 0 {
-                alert(message: "Found a plane, touch here")
-            }
-        }
-    }
     
     var commits: [GitHubCommitData]?
+    var commitWeekCount: Int {
+        return (commits!.count + 6) / 7
+    }
+    var commitBarNode: SCNNode?
+
+    var automaticSetView = false
+    
+    let factor: Float = 0.03
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,19 +37,36 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.antialiasingMode = .multisampling4X
         
+        // Used in 3D games, ignore here
         sceneView.automaticallyUpdatesLighting = false
         
-        let tap = UITapGestureRecognizer()
-        tap.addTarget(self, action: #selector(didTap))
-        sceneView.addGestureRecognizer(tap)
+        if !automaticSetView {
+            let tap = UITapGestureRecognizer()
+            tap.addTarget(self, action: #selector(didTap))
+            sceneView.addGestureRecognizer(tap)
+        }
+            
+        let button = UIButton(frame: CGRect(x: 30, y: 30, width: 60, height: 30))
+        button.backgroundColor = .myYellowColor
+        button.setTitle("Back", for: .normal)
+        button.titleLabel?.font = UIFont(name: "PingFangSC-Regular", size: 15.0)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 4.0
+        button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+        self.view.addSubview(button)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.navigationController?.navigationBar.isHidden = true
+        
         // Create a session configuration
-        let configuration = ARWorldTrackingSessionConfiguration()
+        let configuration = ARWorldTrackingConfiguration()
+        // detect horizontal planes
         configuration.planeDetection = .horizontal
+        // self-fit light
         configuration.isLightEstimationEnabled = true
         
         // Run the view's session
@@ -70,20 +88,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let commits = commits,
             let (plane, position) = anyPlaneFrom(location: location)
             else { return }
-        
-        let floor = SCNFloor()
-        floor.reflectivity = 0
-        let material = SCNMaterial()
-        material.diffuse.contents = UIColor.white
-        material.colorBufferWriteMask = SCNColorMask(rawValue: 0)
-        floor.materials = [material]
-        
-        floorNode = SCNNode(geometry: floor)
-        floorNode.position = position
-        sceneView.scene.rootNode.addChildNode(floorNode)
-        
         currentPlane = plane
-        sceneView.scene = createScene(with: commits, at: position)
+
+        createNodes(with: commits, at: SCNVector3(position.x,
+                                                  position.y,
+                                                  position.z - Float(commitWeekCount) * 0.75 * factor), in: sceneView.scene.rootNode)
+
+        addFloor(at: sceneView.scene.rootNode, with: position)
+    }
+    
+    @objc func backAction() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     func enableEnvironmentMap(withIntensity intensity: CGFloat) {
@@ -105,6 +120,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return (node, SCNVector3.positionFromTransform(results[0].worldTransform))
     }
     
+    private func addFloor(at node: SCNNode, with position: SCNVector3) {
+        let floor = SCNFloor()
+        floor.reflectivity = 0
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.white
+        material.colorBufferWriteMask = SCNColorMask(rawValue: 0)
+        floor.materials = [material]
+        
+        floorNode = SCNNode(geometry: floor)
+        floorNode.position = position
+        node.addChildNode(floorNode)
+    }
+    
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -118,17 +146,29 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    // called when the ARKit detects a plane
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        if planeCount == 0 {
-            planeCount = 1
+        if anchor is ARPlaneAnchor {
+            // ensure that only add 1 plane
+            if automaticSetView {
+                if currentPlane == nil {
+                    currentPlane = node
+                    let planeAnchor = anchor as! ARPlaneAnchor
+                    addFloor(at: node, with: SCNVector3(planeAnchor.center.x, 0, planeAnchor.center.z))
+
+                    createNodes(with: commits!, at: SCNVector3(floorNode.position.x,
+                                                               floorNode.position.y,
+                                                               floorNode.position.z - Float(commitWeekCount) * 0.75 * factor), in: node)
+                }
+            } else {
+                alert(message: "Found a plane, touch here")
+            }
         }
     }
     
     // MARK: - Scene Builder
     
-    private func createScene(with commits: [GitHubCommitData], at position: SCNVector3) -> SCNScene {
-        let scnScene = SCNScene()
-        
+    private func createNodes(with commits: [GitHubCommitData], at position: SCNVector3, in node: SCNNode) {
         let light = SCNLight()
         light.type = .directional
         light.color = UIColor(white: 1.0, alpha: 0.2)
@@ -136,29 +176,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let lightNode = SCNNode()
         lightNode.eulerAngles = SCNVector3Make(-.pi / 3, .pi / 4, 0)
         lightNode.light = light
-        scnScene.rootNode.addChildNode(lightNode)
+        node.addChildNode(lightNode)
         
         let ambientLight = SCNLight()
         ambientLight.type = .ambient
         ambientLight.color = UIColor(white: 0.8, alpha: 0.4)
         let ambientNode = SCNNode()
         ambientNode.light = ambientLight
-        scnScene.rootNode.addChildNode(ambientNode)
+        node.addChildNode(ambientNode)
         
-        let factor: Float = 0.03
-        let count = (commits.count + 6) / 7
+        commitBarNode = SCNNode()
+        commitBarNode?.name = "barNode"
+        commitBarNode?.position = position
         
-        let barNode = SCNNode()
-        barNode.name = "barNode"
-        barNode.position = SCNVector3(position.x, position.y, position.z - Float(count) * 0.75 * factor)
-        
-        scnScene.rootNode.addChildNode(barNode)
+        node.addChildNode(commitBarNode!)
         
         var totalCount = 0
-        for weekFromNow in 0..<count {
+        for weekFromNow in 0..<commitWeekCount {
             for i in 0...6 {
                 totalCount += 1
-                guard totalCount <= commits.count else { return scnScene }
+                guard totalCount <= commits.count else { return }
                 
                 let commitData = commits[weekFromNow * 7 + i]
                 let box = SCNBox(width: CGFloat(factor), height: CGFloat(factor) * (CGFloat(commitData.count) + 1.0), length: CGFloat(factor), chamferRadius: 0.0)
@@ -166,16 +203,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 let material = SCNMaterial()
                 material.diffuse.contents = commitData.color
                 box.materials = [material]
-                node.position = SCNVector3Make(Float(i) * 1.5 * factor, Float(box.height) / 2.0, Float(weekFromNow) * 1.5 * factor)
+                node.position = SCNVector3(Float(i) * 1.5 * factor, Float(box.height) / 2.0, Float(weekFromNow) * 1.5 * factor)
                 
                 print(totalCount)
                 print(box.description)
                 print(node.position)
-                
-                barNode.addChildNode(node)
+
+                commitBarNode!.addChildNode(node)
             }
         }
-        
-        return scnScene
+
+        // adjust the angle of the model
+        let pointOfViewRotation = sceneView.pointOfView?.rotation
+        commitBarNode?.rotation = SCNVector4Make(0, (pointOfViewRotation?.y)!, 0, (pointOfViewRotation?.w)!)
     }
+    
 }

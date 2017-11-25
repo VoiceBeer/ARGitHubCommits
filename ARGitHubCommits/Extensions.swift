@@ -16,6 +16,7 @@ extension FloatingPoint {
 
 extension SCNVector3 {
     // from Apple's demo APP
+    // 相机的位置参数在4X4矩阵的第三列（将 ARCamera 的 matrix_float4x4 转换成 SCNVector3）
     static func positionFromTransform(_ transform: matrix_float4x4) -> SCNVector3 {
         return SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
     }
@@ -41,6 +42,10 @@ extension UIColor {
         let green = CGFloat((rgbValue & 0xFF00) >> 8) / 255.0
         let blue = CGFloat(rgbValue & 0xFF) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+    
+    @nonobjc class var myYellowColor: UIColor {
+        return UIColor(red: 250.0 / 255.0, green: 207.0 / 255.0, blue: 93.0 / 255.0, alpha: 1.0)
     }
 }
 
